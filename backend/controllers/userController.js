@@ -128,3 +128,27 @@ exports.checkuser = async (req, res) => {
         res.status(200).json({ authenticated: false });
     }
 };
+
+
+// upload image
+
+exports.uploadImge=async (req,res) => {
+    try {
+
+    const userId = req.user._id
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {profileImage: req.file.filename },
+      {new: true}
+    )
+
+    if(!user) {
+      return res.status(404).json({message: 'User not found'})
+    }
+    res.status(201).json({success: true, message: 'Image uploaded'})
+    
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({message: 'Server error'})
+  }
+}

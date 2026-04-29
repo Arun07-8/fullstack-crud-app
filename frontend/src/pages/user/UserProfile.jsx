@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
+import { useDispatch, useSelector } from "react-redux"; 
 import { toast } from 'react-toastify';
 import { ArrowLeft, Camera, Trash2, Check, X } from 'lucide-react';
 
@@ -76,7 +77,7 @@ const handleFinalSave = async () => {
         const formData = new FormData();
         formData.append("profileImage", file);
 
-        await axios.post("http://localhost:5000/user/upload", formData);
+        await axios.post("http://localhost:5000/profile/upload/:", formData);
 
         toast.success("Profile image added successfully");
 

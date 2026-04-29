@@ -9,15 +9,4 @@ const storage = multer.diskStorage({
  }
 });
 
-const upload = multer({ storage });
-
-router.post("/upload", upload.single("profileImage"), async (req, res) => {
-
-   const imagePath = req.file.filename;
-
-   await User.findByIdAndUpdate(req.user.id,{
-        profileImage: imagePath
-   });
-
-   res.json({ message: "Image uploaded" });
-});
+export const upload = multer({ storage });
