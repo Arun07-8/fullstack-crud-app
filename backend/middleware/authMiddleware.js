@@ -1,17 +1,35 @@
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
-const authMiddleware = (req, res, next) => {
-   const token = req.cookies.token
-   if (!token) {
-      return res.status(401).json({ message: "Not authorized" });
-   }
-   try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+const authMiddleware = (cookieName, requiredRole) => {
+  return (req, res, next) => {
+    const token = req.cookies?.[cookieName];
+
+    if (!token) {
+      return res.status(401).json({
+        message: "Not authorized",
+      });
+    }
+
+    try {
+      const decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET
+      );
+
+      if (decoded.role !== requiredRole) {
+        return res.status(403).json({
+          message: "Access denied",
+        });
+      }
+
       req.user = decoded;
       next();
-   } catch (err) {
-      return res.status(401).json({ message: "Invalid token" });
-   }
+    } catch (error) {
+      return res.status(401).json({
+        message: "Invalid or expired token",
+      });
+    }
+  };
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;

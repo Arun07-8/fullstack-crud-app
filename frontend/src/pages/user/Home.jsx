@@ -1,19 +1,20 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../../features/auth/authReducer";
+import { logout } from "../../features/auth/authReducer";
 import axios from 'axios';
 import { toast } from 'react-toastify';
+
+
 
 const Home = () => {
     const user = useSelector((state) => state.auth.user);
     const name = user?.name || "Guest";
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     const handleLogout = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/logout', {}, { withCredentials: true });
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/logout`, {}, { withCredentials: true });
             dispatch(logout());
             navigate('/login');
             toast.success(response.data.message);
@@ -23,8 +24,10 @@ const Home = () => {
     };
 
     return (
+        
         <div className="app-wrapper" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             {/* Header with Profile Icon */}
+            
             <header style={{ padding: '1.5rem 2rem', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                 <Link to="/profile" title="User Profile" style={{
                     width: '50px',
@@ -36,11 +39,20 @@ const Home = () => {
                     justifyContent: 'center',
                     textDecoration: 'none',
                     color: '#64748b',
+                    overflow: 'hidden',
                     boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
                     border: '3px solid white',
                     transition: 'transform 0.2s ease-in-out'
                 }} className="hover:scale-110">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    {user?.profileImage ? (
+                        <img
+                            src={user.profileImage}
+                            alt={`${name}'s profile`}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                    ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    )}
                 </Link>
             </header>
 

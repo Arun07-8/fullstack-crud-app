@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../../features/auth/authReducer";
+import { loginSuccess } from "../../features/auth/authReducer";
 import Home from '../user/Home';
 
 const Authpage = () => {
@@ -82,7 +82,7 @@ const Authpage = () => {
         try {
             let response
             if (isLoginMode) {
-                response = await axios.post("http://localhost:5000/login", {
+                response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
                     email: formData.email,
                     password: formData.password
                 },
@@ -91,7 +91,7 @@ const Authpage = () => {
                 dispatch(loginSuccess(response.data.user));
                 navigate("/home");
             } else {
-                response = await axios.post('http://localhost:5000/register', {
+                response = await axios.post(`${import.meta.env.VITE_API_URL}/register`, {
                     fullName: formData.fullName,
                     email: formData.email,
                     phoneNumber: formData.phoneNumber,

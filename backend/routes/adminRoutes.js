@@ -1,19 +1,50 @@
-const express = require('express')
-const router = express.Router()
-const adminController = require("../controllers/adminController")
-const authMiddleware=require('../middleware/authMiddleware')
 
-router.post('/login', adminController.login);
-router.post('/logout', adminController.logout);
+import express from "express";
+import adminController from "../controllers/adminController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
-router.post('/create-users', authMiddleware, adminController.createUser);  
-router.get('/users', authMiddleware, adminController.getUserdata);     
-router.put('/users/:id', authMiddleware, adminController.editUser);   
-router.delete('/delete-user/:id', authMiddleware, adminController.deleteUser); 
-
-router.patch('/block-user/:id', authMiddleware, adminController.blockUser);
-router.patch('/unblock-user/:id', authMiddleware, adminController.unblockUser);
-
-module.exports = router;
+const router = express.Router();
 
 
+router.post("/login", adminController.login);
+router.post("/logout", adminController.logout);
+
+router.post(
+    "/create-user",
+    authMiddleware("adminToken", "admin"),
+    adminController.createUser
+);
+
+router.get(
+    "/users",
+    authMiddleware("adminToken", "admin"),
+    adminController.getUserdata
+);
+
+router.put(
+    "/edit-user/:id",
+    authMiddleware("adminToken", "admin"),
+    adminController.editUser
+);
+
+router.delete(
+    "/delete-user/:id",
+    authMiddleware("adminToken", "admin"),
+    adminController.deleteUser
+);
+
+router.patch(
+    "/block-user/:id",
+    authMiddleware("adminToken", "admin"),
+    adminController.blockUser
+);
+
+router.patch(
+    "/unblock-user/:id",
+    authMiddleware("adminToken", "admin"),
+    adminController.unblockUser
+);
+
+router.get("/checkadmin", adminController.checkadmin);
+
+export default router;

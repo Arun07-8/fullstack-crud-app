@@ -1,19 +1,24 @@
+
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
-const PublicRoute = ({ children }) => {
+const PublicRoute = ({ children, role }) => {
+  const { isAuthenticated, user, loading } = useSelector(
+    (state) => state.auth
+  );
 
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
+  if (loading) {
+    return <p>Checking authentication...</p>;
+  }
 
-  if (isAuthenticated) {
-    if (user?.role === "admin") {
-      return <Navigate to="/admin/dashboard" replace />;
-    }
-
-    if (user?.role === "user") {
-      return <Navigate to="/home" replace />;
-    }
-
+  // Redirect only if the requested role is authenticated.
+  if (isAuthenticated && user?.role === role) {
+    return (
+      <Navigate
+        to={role === "admin" ? "/admin/dashboard" : "/home"}
+        replace
+      />
+    );
   }
 
   return children;

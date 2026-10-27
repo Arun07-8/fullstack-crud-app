@@ -1,27 +1,39 @@
-const express = require("express")
-const cors = require("cors")
-const app = express()
 
-const adminRoutes = require('./routes/adminRoutes')
-const userRoutes = require('./routes/userRoutes')
-const connectDB = require('./config/connectDb')
-const cookieParser = require("cookie-parser");
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+
+import adminRoutes from "./routes/adminRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import connectDB from "./config/connectDb.js";
+
+dotenv.config();
+
+const app = express();
 
 app.use(cookieParser());
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true
-}))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use('/uploads',express.static('uploads'))
 
-app.use('/', userRoutes)
-app.use('/admin', adminRoutes)                                                                         
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-connectDB().then(() => {
-  app.listen(5000, () => {
-    console.log("Backend server running on http://localhost:5000");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/", userRoutes);
+app.use("/admin", adminRoutes);
+
+connectDB()
+  .then(() => {
+    const PORT = process.env.PORT
+    app.listen(PORT, () => {
+      console.log(`Backend server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Database connection failed:", error);
   });
-});

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useDispatch } from "react-redux";
-import { logout } from "../../../features/auth/authReducer";
+import { logout } from "../../features/auth/authReducer";
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -32,7 +32,7 @@ const UserManagement = () => {
 
     const fetchuser = async () => {
         try {
-            const response = await axios.get(`http://localhost:5000/admin/users?page=${page}&limit=5&search=${searchTerm}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/users?page=${page}&limit=5&search=${searchTerm}`, {
                 withCredentials: true
             })
 
@@ -52,7 +52,7 @@ const UserManagement = () => {
 
     const handleLogout = async () => {
         try {
-            let response = await axios.post('http://localhost:5000/admin/logout', {}, { withCredentials: true })
+            let response = await axios.post(`${import.meta.env.VITE_API_URL}/admin/logout`, {}, { withCredentials: true })
             dispatch(logout());
             toast.success(response.data.message);
             navigate('/admin/login')
@@ -116,8 +116,8 @@ const UserManagement = () => {
             try {
                 const id = user._id;
                 const url = user.isBlocked
-                    ? `http://localhost:5000/admin/unblock-user/${id}`
-                    : `http://localhost:5000/admin/block-user/${id}`;
+                    ? `${import.meta.env.VITE_API_URL}/admin/unblock-user/${id}`
+                    : `${import.meta.env.VITE_API_URL}/admin/block-user/${id}`;
 
                 const response = await axios.patch(url, {}, { withCredentials: true });
 
@@ -169,7 +169,7 @@ const UserManagement = () => {
         if (!isValid) return;
         if (modalMode === "add") {
             try {
-                let response = await axios.post('http://localhost:5000/admin/create-user', {
+                let response = await axios.post(`${import.meta.env.VITE_API_URL}/admin/create-user`, {
                     fullName: formData.fullName,
                     email: formData.email,
                     phoneNumber: formData.phoneNumber,
@@ -186,7 +186,7 @@ const UserManagement = () => {
         } else if (modalMode === "edit") {
             try {
                 const editdata = { fullName: formData.fullName, email: formData.email, phoneNumber: formData.phoneNumber }
-                let response = await axios.put(`http://localhost:5000/admin/edit-user/${id}`, editdata, { withCredentials: true })
+                let response = await axios.put(`${import.meta.env.VITE_API_URL}/admin/edit-user/${id}`, editdata, { withCredentials: true })
                 setIsModalOpen(false)
                 setModalMode(null)
                 setFormData({ fullName: "", email: "", phoneNumber: "" })
@@ -224,7 +224,7 @@ const UserManagement = () => {
                 const id = user._id;
                 // axios.delete only needs 2 args: url and config
                 const response = await axios.delete(
-                    `http://localhost:5000/admin/delete-user/${id}`,
+                    `${import.meta.env.VITE_API_URL}/admin/delete-user/${id}`,
                     { withCredentials: true }
                 );
 

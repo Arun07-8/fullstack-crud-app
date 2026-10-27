@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useRef } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import { useDispatch, useSelector } from "react-redux"; 
+import { loginSuccess } from "../../features/auth/authReducer";
 import { toast } from 'react-toastify';
 import { ArrowLeft, Camera, Trash2, Check, X } from 'lucide-react';
 
@@ -9,8 +11,10 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
-    // State for the profile image
-    const [image, setImage] = useState(null);
+    const { user } = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+    const [image, setImage] = useState(user?.profileImage || null);
+    const [hasUnsavedImage, setHasUnsavedImage] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
 
@@ -43,6 +47,7 @@ const UserProfile = () => {
         try {
             const croppedImg = await getCroppedImg(previewImage, croppedAreaPixels);
             setImage(croppedImg);
+            setHasUnsavedImage(true);
             setIsEditing(false);
             setPreviewImage(null);
             toast.success("Profile image updated wrap successfully!");
@@ -71,19 +76,27 @@ const handleFinalSave = async () => {
         const blob = await res.blob();
 
         const file = new File([blob], "profile.jpg", {
-            type: "image/jpeg",
+                    type: "image/jpeg",
         });
 
         const formData = new FormData();
-        formData.append("profileImage", file);
+        formData.append("image", file);
 
-        await axios.post("http://localhost:5000/profile/upload/:", formData);
+        const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/profile/upload`,
+            formData,
+            { withCredentials: true }
+        );
+
+        setImage(response.data.user.profileImage);
+        setHasUnsavedImage(false);
+        dispatch(loginSuccess({ ...user, profileImage: response.data.user.profileImage }));
 
         toast.success("Profile image added successfully");
 
     } catch (error) {
         console.error(error);
-        toast.error("Upload failed");
+        toast.error(error.response?.data?.message || "Upload failed");
     }
 };
 
@@ -156,7 +169,7 @@ const handleFinalSave = async () => {
                                 Add Profile Image
                             </button>
 
-                            {image && (
+                            {image && hasUnsavedImage && (
                                 <button className="btn-profile btn-save-final" onClick={handleFinalSave}>
                                     <Check size={18} />
                                     Save

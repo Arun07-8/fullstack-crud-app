@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../../features/auth/authReducer";
+import { loginSuccess } from "../../features/auth/authReducer";
 
 const AdminLogin = () => {
     const dispatch = useDispatch();
@@ -50,7 +50,7 @@ const AdminLogin = () => {
         }
         setIsSubmitting(true);
         try {
-            const response = await axios.post("http://localhost:5000/admin/login", {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
                 email: formData.email,
                 password: formData.password
             }, { withCredentials: true });
